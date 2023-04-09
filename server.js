@@ -37,7 +37,7 @@ async function getOpenAIResponse(userMessage, userid) {
   RegisterUserIfNecessary(userid);
 
   try {
-    chat_data[userid]['conversation_history'] = chat_data[userid]['conversation_history'] + "\n\n" + userMessage;
+    chat_data[userid]['conversation_history'] = chat_data[userid]['conversation_history'] + "\n\n" + userMessage +".";
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -51,7 +51,7 @@ async function getOpenAIResponse(userMessage, userid) {
           { role: "user", content: chat_data[userid]['conversation_history'] },
         ],
         temperature: 1.2,
-        max_tokens: 128,
+        max_tokens: 2690,
       }),
     });
 
@@ -64,7 +64,7 @@ async function getOpenAIResponse(userMessage, userid) {
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
     chat_data[userid]['conversation_history'] =
-      chat_data[userid]['conversation_history'] + ("\n\n " + data.choices[0].message.content);
+    chat_data[userid]['conversation_history'] + ("\n\n " + data.choices[0].message.content +".");
     return assistantMessage;
   } catch (error) {
     console.error("Error calling OpenAI API:", error);
