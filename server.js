@@ -25,7 +25,7 @@ const url = "https://api.openai.com/v1/chat/completions";
 const defaultPrompt = process.env.DEFAULT_PROMPT;
 let convHistory = "";
 
-chat_data = {};
+let chat_data = {};
 function RegisterUserIfNecessary(userid) {
   if (!(userid in chat_data)) {
     chat_data[userid] = {
