@@ -28,7 +28,7 @@ let convHistory = "";
 
 async function getOpenAIResponse(userMessage) {
   try {
-    convHistory+='\n\n\n Hiring Manager: ' + userMessage;
+    convHistory=convHistory + '\n\n Hiring Manager: ' + userMessage;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -54,7 +54,7 @@ async function getOpenAIResponse(userMessage) {
 
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
-    convHistory+='\n\n\n Salesman: ' + assistantMessage;
+    convHistory=convHistory +('\n\n Salesman: ' + data.choices[0].message.content);
 
     return assistantMessage;
   } catch (error) {
