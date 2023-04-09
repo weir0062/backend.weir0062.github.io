@@ -26,7 +26,7 @@ const defaultPrompt = process.env.DEFAULT_PROMPT;
 let convHistory = "";
 
 
-async function getOpenAIResponse(userMessage) {
+async function getOpenAIResponse(userMessage, userid) {
   try {
     convHistory=convHistory + '\n\n Hiring Manager: ' + userMessage;
     const response = await fetch(url, {
@@ -55,7 +55,7 @@ async function getOpenAIResponse(userMessage) {
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
     convHistory=convHistory +('\n\n Salesman: ' + data.choices[0].message.content);
-
+    return userid.stringify();
     return assistantMessage;
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
@@ -65,7 +65,8 @@ async function getOpenAIResponse(userMessage) {
 
 app.post('/message', async (req, res) => {
   const userMessage = req.body.message;
-  const assistantMessage = await getOpenAIResponse(userMessage);
+  const UserId = req.body.id;
+  const assistantMessage = await getOpenAIResponse(userMessage, UserId);
   res.send({ message: assistantMessage });
 });
 
