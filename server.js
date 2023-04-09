@@ -1,10 +1,10 @@
-import fetch from 'node-fetch';
-import express from 'express';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import dotenv from 'dotenv';
+import fetch from "node-fetch";
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,15 +25,24 @@ const url = "https://api.openai.com/v1/chat/completions";
 const defaultPrompt = process.env.DEFAULT_PROMPT;
 let convHistory = "";
 
-
+chat_data = {};
+function RegisterUserIfNecessary(userid) {
+  if (!(userid in chat_data)) {
+    chat_data[userid] = {
+      'conversation_history': INITIAL_PROMPT + convHistory + "\n",
+    };
+  }
+}
 async function getOpenAIResponse(userMessage, userid) {
+  RegisterUserIfNecessary(userid);
+
   try {
-    convHistory=convHistory + '\n\n Hiring Manager: ' + userMessage;
+    chat_data[userid]['conversation_history'] = convHistory + "\n\n Hiring Manager: " + userMessage;
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -48,22 +57,22 @@ async function getOpenAIResponse(userMessage, userid) {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Error from OpenAI API:', JSON.stringify(error, null, 2));
-      throw new Error('API response not OK');
+      console.error("Error from OpenAI API:", JSON.stringify(error, null, 2));
+      throw new Error("API response not OK");
     }
 
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
-    convHistory=convHistory +('\n\n Salesman: ' + data.choices[0].message.content);
-    return userid;
+    convHistory =
+      convHistory + ("\n\n Salesman: " + data.choices[0].message.content);
     return assistantMessage;
   } catch (error) {
-    console.error('Error calling OpenAI API:', error);
+    console.error("Error calling OpenAI API:", error);
     throw error;
   }
 }
 
-app.post('/message', async (req, res) => {
+app.post("/message", async (req, res) => {
   const userMessage = req.body.message;
   const UserId = req.body.id;
   const assistantMessage = await getOpenAIResponse(userMessage, UserId);
@@ -71,8 +80,8 @@ app.post('/message', async (req, res) => {
 });
 
 // Serve the index.html file
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
