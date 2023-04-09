@@ -55,7 +55,7 @@ async function getOpenAIResponse(userMessage, userid) {
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
     convHistory=convHistory +('\n\n Salesman: ' + data.choices[0].message.content);
-    return userid.stringify();
+    return userid;
     return assistantMessage;
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
