@@ -29,7 +29,7 @@ chat_data = {};
 function RegisterUserIfNecessary(userid) {
   if (!(userid in chat_data)) {
     chat_data[userid] = {
-      'conversation_history': INITIAL_PROMPT + convHistory + "\n",
+      'conversation_history': defaultPrompt + convHistory + "\n",
     };
   }
 }
@@ -37,7 +37,7 @@ async function getOpenAIResponse(userMessage, userid) {
   RegisterUserIfNecessary(userid);
 
   try {
-    chat_data[userid]['conversation_history'] = convHistory + "\n\n Hiring Manager: " + userMessage;
+    chat_data[userid]['conversation_history'] = chat_data[userid]['conversation_history'] + "\n\n Hiring Manager: " + userMessage;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -48,7 +48,7 @@ async function getOpenAIResponse(userMessage, userid) {
         model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: defaultPrompt },
-          { role: "user", content: convHistory },
+          { role: "user", content: chat_data[userid]['conversation_history'] },
         ],
         temperature: 1.2,
         max_tokens: 128,
@@ -63,8 +63,8 @@ async function getOpenAIResponse(userMessage, userid) {
 
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
-    convHistory =
-      convHistory + ("\n\n Salesman: " + data.choices[0].message.content);
+    chat_data[userid]['conversation_history'] =
+      chat_data[userid]['conversation_history'] + ("\n\n Salesman: " + data.choices[0].message.content);
     return assistantMessage;
   } catch (error) {
     console.error("Error calling OpenAI API:", error);
