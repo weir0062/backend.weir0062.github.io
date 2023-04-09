@@ -1,15 +1,20 @@
 import fetch from 'node-fetch';
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-require('dotenv').config();
 
-
+dotenv.config();
 
 // Serve the static files (CSS, JS, etc.)
 app.use(express.static(path.join(__dirname)));
@@ -17,8 +22,7 @@ app.use(express.static(path.join(__dirname)));
 const apiKey = process.env.OPENAI_API_KEY;
 const url = "https://api.openai.com/v1/chat/completions";
 
-var defaultPrompt = process.env.DEFAULT_PROMPT ;
-
+const defaultPrompt = process.env.DEFAULT_PROMPT;
 
 async function getOpenAIResponse(userMessage) {
   try {
@@ -60,7 +64,7 @@ app.post('/message', async (req, res) => {
   res.send({ message: assistantMessage });
 });
 
-// Serve the Chat.html file
+// Serve the index.html file
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
