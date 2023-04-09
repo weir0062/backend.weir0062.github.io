@@ -23,12 +23,12 @@ const apiKey = process.env.OPENAI_API_KEY;
 const url = "https://api.openai.com/v1/chat/completions";
 
 const defaultPrompt = process.env.DEFAULT_PROMPT;
-const convHistory = "";
+let convHistory = "";
 
 
 async function getOpenAIResponse(userMessage) {
   try {
-    convHistory+=userMessage;
+    convHistory+='\n\n\n Hiring Manager: ' + userMessage;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -54,6 +54,8 @@ async function getOpenAIResponse(userMessage) {
 
     const data = await response.json();
     const assistantMessage = data.choices[0].message.content;
+    convHistory+='\n\n\n Salesman: ' + assistantMessage;
+
     return assistantMessage;
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
