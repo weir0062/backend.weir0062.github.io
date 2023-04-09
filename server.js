@@ -23,9 +23,12 @@ const apiKey = process.env.OPENAI_API_KEY;
 const url = "https://api.openai.com/v1/chat/completions";
 
 const defaultPrompt = process.env.DEFAULT_PROMPT;
+const convHistory = "";
+
 
 async function getOpenAIResponse(userMessage) {
   try {
+    convHistory+=userMessage;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -36,7 +39,7 @@ async function getOpenAIResponse(userMessage) {
         model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: defaultPrompt },
-          { role: "user", content: userMessage },
+          { role: "user", content: convHistory },
         ],
         temperature: 1.2,
         max_tokens: 128,
